@@ -103,11 +103,11 @@ class Pupil_LSL_Relay(Plugin):
         self.channels.extend(self.eye_center_channels())
         self.channels.extend(self.gaze_normal_channels())
         self.channels.extend(self.diameter_2d_channels())
-        self.channels.extend(self.diameter_d_channels())
+        self.channels.extend(self.diameter_3d_channels())
 
     def confidence_channel(self):
         return _Channel(
-            queries=[["confidence"]],
+            query=extract_confidence,
             label="confidence",
             eye="both",
             metatype="Confidence",
@@ -117,20 +117,20 @@ class Pupil_LSL_Relay(Plugin):
     def norm_pos_channels(self):
         return [
             _Channel(
-                queries=[["norm_pos"], i],
+                query=make_extract_normpos(i),
                 label="norm_pos_" + "xy"[i],
                 eye="both",
                 metatype="Screen" + "XY"[i],
                 unit="normalized",
                 coordinate_system="world",
             )
-            for i in range(3)
+            for i in range(2)
         ]
 
     def gaze_point_3d_channels(self):
         return [
             _Channel(
-                queries=[["gaze_point_3d"], i],
+                query=make_extract_gaze_point_3d(i),
                 label="gaze_point_3d_" + "xyz"[i],
                 eye="both",
                 metatype="Direction" + "XYZ"[i],
@@ -143,7 +143,7 @@ class Pupil_LSL_Relay(Plugin):
     def eye_center_channels(self):
         return [
             _Channel(
-                queries=[["eye_centers_3d", eye, i], ["eye_center_3d", i]],
+                query=make_extract_eye_center_3d(eye, i),
                 label="eye_center{}_3d_{}".format(eye, "xyz"[i]),
                 eye=("right", "left")[eye],
                 metatype="Position" + "XYZ"[i],
@@ -157,7 +157,7 @@ class Pupil_LSL_Relay(Plugin):
     def gaze_normal_channels(self):
         return [
             _Channel(
-                queries=[["gaze_normals_3d", eye, i], ["gaze_normal_3d", i]],
+                query=make_extract_gaze_normal_3d(eye, i),
                 label="gaze_normal{}_{}".format(eye, "xyz"[i]),
                 eye=("right", "left")[eye],
                 metatype="Position" + "XYZ"[i],
@@ -171,7 +171,7 @@ class Pupil_LSL_Relay(Plugin):
     def diameter_2d_channels(self):
         return [
             _Channel(
-                queries=[["confidence"]],
+                query=make_extract_diameter_2d(eye),
                 label="diameter{}_2d".format(eye),
                 eye=("right", "left")[eye],
                 metatype="Diameter",
@@ -184,7 +184,7 @@ class Pupil_LSL_Relay(Plugin):
     def diameter_3d_channels(self):
         return [
             _Channel(
-                queries=[["confidence"]],
+                query=make_extract_diameter_3d(eye),
                 label="diameter{}_3d".format(eye),
                 eye=("right", "left")[eye],
                 metatype="Diameter",
@@ -196,36 +196,83 @@ class Pupil_LSL_Relay(Plugin):
 
 
 class _Channel:
-    def __init__(self, queries, label, eye, metatype, unit, coordinate_system=None):
+    def __init__(self, query, label, eye, metatype, unit, coordinate_system=None):
         self.label = label
         self.eye = eye
         self.metatype = metatype
         self.unit = unit
         self.coordinate_system = coordinate_system
-        self.queries = queries
+        self.query = query
 
-    def extract(self, gaze):
-        for query in self.queries:
-            try:
-                if callable(query):
-                    return query(gaze)
-                else:
-                    return self._query_gaze_keys(gaze, query)
-            except (KeyError, IndexError):
-                pass
-        return np.nan
-
-    @staticmethod
-    def _query_gaze_keys(gaze, keys):
-        result = gaze
-        for key in keys:
-            result = result[key]
-        return result
-
-    def append_to_streaminfo(self, stream_info):
-        chan = stream_info.desc().append_child("channel").append_child("channel")
+    def append_to(self, channels):
+        chan = channels.append_child("channel")
         chan.append_child_value("label", self.label)
         chan.append_child_value("eye", self.eye)
         chan.append_child_value("type", self.metatype)
         chan.append_child_value("unit", self.unit)
-        chan.append_child_value("coordinate_system", self.coordinate_system)
+        if self.coordinate_system:
+            chan.append_child_value("coordinate_system", self.coordinate_system)
+
+
+def extract_confidence(gaze):
+    return gaze["confidence"]
+
+
+def make_extract_normpos(dim):
+    return lambda gaze: gaze["norm_pos"][dim]
+
+
+def make_extract_gaze_point_3d(dim):
+    return (
+        lambda gaze: gaze["gaze_point_3d"][dim] if "gaze_point_3d" in gaze else np.nan
+    )
+
+
+def make_extract_eye_center_3d(eye, dim):
+    def extract_eye_center_3d(gaze):
+        topic = gaze["topic"]
+        if topic.endswith("3d.01."):
+            return gaze["eye_centers_3d"][eye][dim]
+        elif topic.endswith("3d.{}.".format(eye)):
+            return gaze["eye_center_3d"][dim]
+        else:
+            return np.nan
+
+    return extract_eye_center_3d
+
+
+def make_extract_gaze_normal_3d(eye, dim):
+    def extract_gaze_normal_3d(gaze):
+        topic = gaze["topic"]
+        if topic.endswith("3d.01."):
+            return gaze["gaze_normals_3d"][eye][dim]
+        elif topic.endswith("3d.{}.".format(eye)):
+            return gaze["gaze_normal_3d"][dim]
+        else:
+            return np.nan
+
+    return extract_gaze_normal_3d
+
+
+def make_extract_diameter_2d(eye):
+    def extract_diameter_2d(gaze):
+        base_data = gaze["base_data"]
+        for pupil in base_data:
+            if pupil["id"] == eye:
+                return pupil["diameter"]
+        else:
+            return np.nan
+
+    return extract_diameter_2d
+
+
+def make_extract_diameter_3d(eye):
+    def extract_diameter_3d(gaze):
+        base_data = gaze["base_data"]
+        for pupil in base_data:
+            if pupil["id"] == eye:
+                return pupil["diameter_3d"]
+        else:
+            return np.nan
+
+    return extract_diameter_3d
