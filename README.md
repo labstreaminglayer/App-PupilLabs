@@ -1,46 +1,24 @@
 # Pupil LSL Relay Plugin
 
-Plugin for _[Pupil Capture](https://github.com/pupil-labs/pupil/wiki/Pupil-Capture)_ that relays pupil and gaze data, as well as notification, to the [lab streaming layer](https://github.com/sccn/labstreaminglayer).
+Plugin for _[Pupil Capture](https://github.com/pupil-labs/pupil/wiki/Pupil-Capture)_ that publishes realtime gaze data using the [lab streaming layer](https://github.com/sccn/labstreaminglayer) framework.
 
 ## Installation
 
  [user plugin directory](https://docs.pupil-labs.com/#plugin-guide)
 
 1. Install `pylsl`
-2. Copy the `pylsl` with all its content to the plugin directory_.
-3. Copy [`pupil_lsl_relay.py`](pupil_lsl_relay.py) to the .
+2. Copy or symlink `pylsl` with all its content to the _plugin directory_.
+3. Copy [`pupil_lsl_relay.py`](pupil_lsl_relay.py) to the _plugin directory_.
 
 
 ## Usage
 
 1. Start _Pupil Capture_.
 2. [Open the _Pupil LSL Relay_ plugin](https://docs.pupil-labs.com/#open-a-plugin).
-3. Optional: Deselect relaying for pupil data, gaze data, or notifications.
-4. Now the LSL outlets are ready to provide data to other inlets in the network.
+3. Now the LSL outlet is ready to provide data to other inlets in the network.
 
-## LSL Outlets
+## LSL Outlet
 
-All stream outlets are of type `Pupil Capture`.
+The outlet opens a single outlet named `pupil_capture` that follows the [Gaze Meta Data](https://github.com/sccn/xdf/wiki/Gaze-Meta-Data) format.
 
-Primitive data streams consist of 5 channels (`lsl.cf_double64`):
-    - `diameter` (`-1.0` for gaze streams)
-    - `confidence`
-    - `timestamp`
-    - `norm_pos.x`
-    - `norm_pos.y`
-
-Python Representation streams consist of 1 channel containing the
-Python repr() string of the datum.
-
-The plugin provides following outlets:
-
-- When relaying pupil data:
-    - Pupil Primitive Data - Eye 0
-    - Pupil Primitive Data - Eye 1
-    - Pupil Python Representation - Eye 0
-    - Pupil Python Representation - Eye 1
-- When relaying gaze data:
-    - Gaze Primitive Data
-    - Gaze Python Representation
-- When relaying notifications:
-    - Notifications
+See our [pupil-helpers](https://github.com/pupil-labs/pupil-helpers/tree/master/LabStreamingLayer) for examples on how to record and visualize the published data.

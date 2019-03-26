@@ -67,6 +67,12 @@ class Pupil_LSL_Relay(Plugin):
         """Initializes sidebar menu"""
         self.add_menu()
         self.menu.label = "Pupil LSL Relay"
+        self.menu.append(ui.Info_Text("LSL outlet name: `pupil_capture`"))
+        self.menu.append(
+            ui.Info_Text(
+                "LSL outlet format: https://github.com/sccn/xdf/wiki/Gaze-Meta-Data"
+            )
+        )
 
     def deinit_ui(self):
         self.remove_menu()
