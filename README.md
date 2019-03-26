@@ -19,6 +19,6 @@ Plugin for _[Pupil Capture](https://github.com/pupil-labs/pupil/wiki/Pupil-Captu
 
 ## LSL Outlet
 
-The outlet opens a single outlet named `pupil_capture` that follows the [Gaze Meta Data](https://github.com/sccn/xdf/wiki/Gaze-Meta-Data) format.
+The plugin opens a single outlet named `pupil_capture` that follows the [Gaze Meta Data](https://github.com/sccn/xdf/wiki/Gaze-Meta-Data) format.
 
 See our [pupil-helpers](https://github.com/pupil-labs/pupil-helpers/tree/master/LabStreamingLayer) for examples on how to record and visualize the published data.
