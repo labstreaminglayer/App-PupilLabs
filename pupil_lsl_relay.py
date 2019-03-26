@@ -10,6 +10,7 @@
 
 from time import sleep
 import logging
+import uuid
 
 import numpy as np
 import pylsl as lsl
@@ -27,8 +28,30 @@ class Pupil_LSL_Relay(Plugin):
 
     icon_chr = "LR"
 
-    def __init__(self, g_pool):
+    def __init__(self, g_pool, outlet_uuid=None):
         super().__init__(g_pool)
+        self.outlet_uuid = outlet_uuid or str(uuid.uuid4())
+        self.outlet = self.construct_outlet()
+
+    def recent_events(self, events):
+        if not self.outlet.have_consumers():
+            return
+        for gaze in events.get("gaze", ()):
+            self.push_gaze_sample(gaze)
+
+    def push_gaze_sample(self, gaze):
+        try:
+            sample = self.extract_gaze_sample(gaze)
+        except Exception as exc:
+            logger.error("Error extracting gaze sample: {}".format(exc))
+            logger.debug(str(gaze))
+            return
+        # push_chunk might be more efficient but does not
+        # allow to set explicit timstamps for all samples
+        self.outlet.push_sample(sample, gaze["timestamp"])
+
+    def extract_gaze_sample(self, gaze):
+        return [chan.query(gaze) for chan in self.channels]
 
     def init_ui(self):
         """Initializes sidebar menu"""
@@ -37,6 +60,9 @@ class Pupil_LSL_Relay(Plugin):
 
     def deinit_ui(self):
         self.remove_menu()
+
+    def get_init_dict(self):
+        return {"outlet_uuid": self.outlet_uuid}
 
     def cleanup(self):
         """gets called when the plugin get terminated.
