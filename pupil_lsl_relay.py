@@ -30,6 +30,16 @@ class Pupil_LSL_Relay(Plugin):
 
     def __init__(self, g_pool, outlet_uuid=None):
         super().__init__(g_pool)
+        debug_ts_before = g_pool.get_timestamp()
+        time_dif = g_pool.get_now() - lsl.local_clock()
+        g_pool.timebase.value = time_dif
+        debug_ts_after = g_pool.get_timestamp()
+        debug_ts_lsl = lsl.local_clock()
+        logger.info("Synchronized time epoch to LSL clock")
+        logger.debug("Time before synchronization: {}".format(debug_ts_before))
+        logger.debug("Time after synchronization: {}".format(debug_ts_after))
+        logger.debug("LabStreamingLayer time: {}".format(debug_ts_lsl))
+
         self.outlet_uuid = outlet_uuid or str(uuid.uuid4())
         self.outlet = self.construct_outlet()
 
