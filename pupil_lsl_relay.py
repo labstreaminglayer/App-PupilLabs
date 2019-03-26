@@ -42,48 +42,12 @@ class Pupil_LSL_Relay(Plugin):
         """gets called when the plugin get terminated.
            This happens either voluntarily or forced.
         """
-        pass
+        self.outlet = None
 
-    @staticmethod
-    def _append_acquisition_info(streaminfo):
-        """Appends acquisition information to stream description"""
-        acquisition = streaminfo.desc().append_child("acquisition")
-        acquisition.append_child_value("manufacturer", "Pupil Labs")
-        acquisition.append_child_value("source", "Pupil LSL Relay Plugin")
-        acquisition.append_child_value("model", "2")
-
-    def _create_primitive_lsl_outlet(self):
-        """Create 5 channel primitive data outlet"""
-        stream_info = lsl.StreamInfo(
-            name="pupil_capture",
-            type="Gaze",
-            channel_count=5,
-            channel_format=lsl.cf_double64,
-        )
-        self._append_channel_info(
-            stream_info,
-            ("diameter", "confidence", "timestamp", "norm_pos_x", "norm_pos_y"),
-        )
-        self._append_acquisition_info(stream_info)
+    def construct_outlet(self):
+        self.setup_channels()
+        stream_info = self.construct_streaminfo()
         return lsl.StreamOutlet(stream_info)
-
-    @staticmethod
-    def _append_channel_info(streaminfo, channels):
-        """Appends channel information to stream description"""
-        xml_channels = streaminfo.desc().append_child("channels")
-        for channel in channels:
-            xml_channels.append_child("channel").append_child_value("label", channel)
-
-    @staticmethod
-    def _generate_primitive_sample(payload):
-        """Combine payload's primitive fields into sample"""
-        return (
-            payload.get("diameter", -1.0),
-            payload["confidence"],
-            payload["timestamp"],
-            payload["norm_pos"][0],
-            payload["norm_pos"][1],
-        )
 
     def construct_streaminfo(self):
         self.setup_channels()
@@ -92,9 +56,12 @@ class Pupil_LSL_Relay(Plugin):
             type="Gaze",
             channel_count=len(self.channels),
             channel_format=lsl.cf_double64,
+            source_id=self.outlet_uuid,
         )
+        xml_channels = stream_info.desc().append_child("channels")
         for chan in self.channels:
-            chan.append_to_streaminfo(stream_info)
+            chan.append_to(xml_channels)
+        return stream_info
 
     def setup_channels(self):
         self.channels = [self.confidence_channel()]
