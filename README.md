@@ -1,49 +1,32 @@
 # Pupil LSL Relay Plugin
 
-Plugin for _[Pupil Capture](https://github.com/pupil-labs/pupil/wiki/Pupil-Capture)_ that relays pupil and gaze data, as well as notification, to the [lab streaming layer](https://github.com/sccn/labstreaminglayer).
+Plugin for _[Pupil Capture](https://github.com/pupil-labs/pupil/wiki/Pupil-Capture)_ that publishes realtime gaze data using the [lab streaming layer](https://github.com/sccn/labstreaminglayer) framework.
 
 ## Installation
 
-1. Build the [LSL Python bindings](https://github.com/sccn/labstreaminglayer/tree/master/LSL/liblsl-Python).
-    1. Download [liblsl-Python-1.11.zip](ftp://sccn.ucsd.edu/pub/software/LSL/SDK/liblsl-Python-1.11.zip)
-    2. Extract the zip file
-    3. Execute `python setup.py build` in the extracted folder. This should generate a `build` folder.
-    4. `build` should include another folder called `lib` that includes a folder called `pylsl`.
-2. Copy the `pylsl` with all its content to the _user plugin directory*_.
-3. Copy [`pupil_lsl_relay.py`](pupil_lsl_relay.py) to the _user plugin directory*_.
+ [user plugin directory](https://docs.pupil-labs.com/#plugin-guide)
 
-* Wiki link for the [user plugin directory](https://docs.pupil-labs.com/#plugin-guide)
+1. Install `pylsl`
+2. Copy or symlink `pylsl` with all its content to the _plugin directory_.
+3. Copy [`pupil_lsl_relay.py`](pupil_lsl_relay.py) to the _plugin directory_.
+
 
 ## Usage
 
 1. Start _Pupil Capture_.
 2. [Open the _Pupil LSL Relay_ plugin](https://docs.pupil-labs.com/#open-a-plugin).
-3. Optional: Deselect relaying for pupil data, gaze data, or notifications.
-4. Now the LSL outlets are ready to provide data to other inlets in the network.
+3. Now the LSL outlet is ready to provide data to other inlets in the network.
 
-## LSL Outlets
+## LSL Outlet
 
-All stream outlets are of type `Pupil Capture`.
+The plugin opens a single outlet named `pupil_capture` that follows the [Gaze Meta Data](https://github.com/sccn/xdf/wiki/Gaze-Meta-Data) format.
 
-Primitive data streams consist of 5 channels (`lsl.cf_double64`):
-    - `diameter` (`-1.0` for gaze streams)
-    - `confidence`
-    - `timestamp`
-    - `norm_pos.x`
-    - `norm_pos.y`
+See our [pupil-helpers](https://github.com/pupil-labs/pupil-helpers/tree/master/LabStreamingLayer) for examples on how to record and visualize the published data.
 
-Python Representation streams consist of 1 channel containing the
-Python repr() string of the datum.
+The published LSL data is simply a flattened version (see `extract_*()` functions in `pupil_lsl_relay.py`) of the original Pupil gaze data stream. The stream's channels will be filled with best effort, i.e. if there is a monocular gaze datum the values for the opposite eye will be set to `NaN`. The actual pairing of pupil data to binocular gaze data happens in [Capture](https://github.com/pupil-labs/pupil/blob/master/pupil_src/shared_modules/calibration_routines/gaze_mappers.py#L95-L140) and is not a LSL specific behaviour. Therefore, it is prossible to apply the same [flattening code](https://github.com/papr/App-PupilLabs/blob/master/pupil_lsl_relay.py#L226-L287) to offline calibrated gaze data and reproduce the stream published by the LSL outlet.
 
-The plugin provides following outlets:
+## LSL Clock Synchronization
 
-- When relaying pupil data:
-    - Pupil Primitive Data - Eye 0
-    - Pupil Primitive Data - Eye 1
-    - Pupil Python Representation - Eye 0
-    - Pupil Python Representation - Eye 1
-- When relaying gaze data:
-    - Gaze Primitive Data
-    - Gaze Python Representation
-- When relaying notifications:
-    - Notifications
+The `Pupil LSL Relay` plugin adjusts Capture's timebase to synchronize Capture's own clock with the `pylsl.local_clock()`. This allows the recording of native Capture timestamps and removes the necessity of manually synchronize timestamps after the effect.
+
+**Warning**: The time synchronization will potentially break if other time alternating actors (e.g. the `Time Sync` plugin or `hmd-eyes`) are active. 
