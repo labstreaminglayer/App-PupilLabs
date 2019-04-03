@@ -277,7 +277,7 @@ def make_extract_diameter_3d(eye):
     def extract_diameter_3d(gaze):
         base_data = gaze["base_data"]
         for pupil in base_data:
-            if pupil["id"] == eye:
+            if pupil["id"] == eye and "diameter_3d" in pupil:
                 return pupil["diameter_3d"]
         else:
             return np.nan
