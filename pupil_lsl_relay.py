@@ -44,8 +44,6 @@ class Pupil_LSL_Relay(Plugin):
         self.outlet = self.construct_outlet()
 
     def recent_events(self, events):
-        if not self.outlet.have_consumers():
-            return
         for gaze in events.get("gaze", ()):
             self.push_gaze_sample(gaze)
 
