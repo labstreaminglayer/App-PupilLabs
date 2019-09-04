@@ -18,6 +18,7 @@ import pylsl as lsl
 from plugin import Plugin
 from pyglui import ui
 
+VERSION = '2.0'
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -98,6 +99,7 @@ class Pupil_LSL_Relay(Plugin):
             channel_format=lsl.cf_double64,
             source_id=self.outlet_uuid,
         )
+        stream_info.desc().append_child_value("version", VERSION)
         xml_channels = stream_info.desc().append_child("channels")
         for chan in self.channels:
             chan.append_to(xml_channels)
