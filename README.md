@@ -23,7 +23,23 @@ The plugin opens a single outlet named `pupil_capture` that follows the [Gaze Me
 
 See our [pupil-helpers](https://github.com/pupil-labs/pupil-helpers/tree/master/LabStreamingLayer) for examples on how to record and visualize the published data.
 
-The published LSL data is simply a flattened version (see `extract_*()` functions in `pupil_lsl_relay.py`) of the original Pupil gaze data stream. The stream's channels will be filled with best effort, i.e. if there is a monocular gaze datum the values for the opposite eye will be set to `NaN`. The actual pairing of pupil data to binocular gaze data happens in [Capture](https://github.com/pupil-labs/pupil/blob/master/pupil_src/shared_modules/calibration_routines/gaze_mappers.py#L95-L140) and is not a LSL specific behaviour. Therefore, it is prossible to apply the same [flattening code](https://github.com/papr/App-PupilLabs/blob/master/pupil_lsl_relay.py#L226-L287) to offline calibrated gaze data and reproduce the stream published by the LSL outlet.
+The published LSL data is simply a flattened version (see `extract_*()` functions in `pupil_lsl_relay.py`) of the original Pupil gaze data stream. The stream's channels will be filled with best effort, i.e. if there is a monocular gaze datum the values for the opposite eye will be set to `NaN`. The actual pairing of pupil data to binocular gaze data happens in [Capture](https://github.com/pupil-labs/pupil/blob/master/pupil_src/shared_modules/calibration_routines/gaze_mappers.py#L95-L140) and is not a LSL specific behaviour. Therefore, it is possible to apply the same [flattening code](https://github.com/papr/App-PupilLabs/blob/master/pupil_lsl_relay.py#L226-L287) to offline calibrated gaze data and reproduce the stream published by the LSL outlet.
+
+## Data Format
+
+'confidence': Normalized (0-1) confidence.
+
+'norm_pos_x', 'norm_pos_y': Normalized (0-1) coordinates on the screen.
+
+'gaze_point_3d_x', 'gaze_point_3d_y', 'gaze_point_3d_z': World coordinates in mm
+
+'eye_centerright_3d_x' ... (for right/left eyes, for x/y/z): Position of eye center in world coordinates in mm.
+
+'gaze_normalright_x' (right/left, x/y/z): End point of vector from eye center (I think).
+
+'diameterright_2d' (right/left): Pupil diameter in pixels
+
+'diameterright_3d' (right/left): Pupil diameter in mm
 
 ## LSL Clock Synchronization
 
