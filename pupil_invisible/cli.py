@@ -4,17 +4,63 @@ import typing
 
 import click
 
-from .controllers import ConnectionController
+from .controllers import ConnectionController, InteractionController
 from .pi_gaze_relay import PupilInvisibleGazeRelay
+
+
+logger = logging.getLogger(__name__)
 
 
 @click.command()
 @click.option("--host-name", default=None, help="Device (host) name to connect")
 def main(host_name: str):
 
-    handlers = [
-        logging.StreamHandler(),
-    ]
+    if host_name is None:
+        toggle_logging(enable=False)
+        host_name = interactive_mode_get_host_name()
+
+    if host_name is None:
+        exit(0)
+
+    toggle_logging(enable=True)
+
+    gaze_relay = PupilInvisibleGazeRelay()
+
+    for gaze in gaze_data_stream(host_name):
+        gaze_relay.push_gaze_sample(gaze)
+
+
+def interactive_mode_get_host_name():
+    interaction = InteractionController()
+    try:
+        while True:
+            host_name = interaction.get_user_selected_host_name()
+            if host_name is not None:
+                return host_name
+    except KeyboardInterrupt:
+        return None
+    finally:
+        interaction.cleanup()
+
+
+def gaze_data_stream(host_name):
+    connection = ConnectionController(host_name=host_name)
+    try:
+        while True:
+            connection.poll_events()
+            for gaze in connection.fetch_gaze():
+                # logger.debug(gaze)
+                yield gaze
+    except KeyboardInterrupt:
+        pass
+    finally:
+        connection.cleanup()
+
+
+def toggle_logging(enable: bool):
+    handlers = []
+    if enable:
+        handlers.append(logging.StreamHandler())
     logging.basicConfig(
         level=logging.DEBUG,
         handlers=handlers,
@@ -23,28 +69,6 @@ def main(host_name: str):
         datefmt="%Y-%m-%d %H:%M:%S",
     )
     logging.getLogger("pyre").setLevel(logging.WARNING)
-
-    if host_name is None:
-        NotImplementedError("Interactive mode not yet implemented")
-
-    gaze_relay = PupilInvisibleGazeRelay()
-
-    for gaze in gaze_data_stream(host_name):
-        print(gaze)
-        gaze_relay.push_gaze_sample(gaze)
-
-
-def gaze_data_stream(host_name):
-    controller = ConnectionController(host_name=host_name)
-    try:
-        while True:
-            controller.poll_events()
-            for gaze in controller.fetch_gaze():
-                yield gaze
-    except KeyboardInterrupt:
-        pass
-    finally:
-        controller.cleanup()
 
 
 if __name__ == "__main__":
