@@ -4,7 +4,7 @@ import typing
 
 import click
 
-from .host_controller import ConnectionController
+from .controllers import ConnectionController
 from .pi_gaze_relay import PupilInvisibleGazeRelay
 
 
