@@ -4,7 +4,7 @@ import typing
 
 import click
 
-from .host_controller import HostController
+from .host_controller import ConnectionController
 from .pi_gaze_relay import PupilInvisibleGazeRelay
 
 
@@ -25,7 +25,7 @@ def main(host_name: str):
     logging.getLogger("pyre").setLevel(logging.WARNING)
 
     if host_name is not None:
-        controller = HostController(host_name=host_name)
+        controller = ConnectionController(host_name=host_name)
     else:
         raise NotImplementedError
 
