@@ -24,19 +24,23 @@ def main(host_name: str):
     )
     logging.getLogger("pyre").setLevel(logging.WARNING)
 
-    if host_name is not None:
-        controller = ConnectionController(host_name=host_name)
-    else:
-        raise NotImplementedError
+    if host_name is None:
+        NotImplementedError("Interactive mode not yet implemented")
 
     gaze_relay = PupilInvisibleGazeRelay()
 
+    for gaze in gaze_data_stream(host_name):
+        print(gaze)
+        gaze_relay.push_gaze_sample(gaze)
+
+
+def gaze_data_stream(host_name):
+    controller = ConnectionController(host_name=host_name)
     try:
         while True:
             controller.poll_events()
             for gaze in controller.fetch_gaze():
-                # print(gaze)
-                gaze_relay.push_gaze_sample(gaze)
+                yield gaze
     except KeyboardInterrupt:
         pass
     finally:
