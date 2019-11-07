@@ -1,5 +1,12 @@
 # Pupil Invisible Gaze Relay
 
+## Installation
+
+```bash
+# From the current directory (App-PupilLabs/pupil_invisible)
+pip3 install -r requirements.txt
+```
+
 ## Usage
 
 #### Basic mode
