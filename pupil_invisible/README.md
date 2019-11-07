@@ -4,7 +4,7 @@
 
 #### Basic mode
 
-The basic usage of the Pupil Invisible Gaze Relay module is to provide a device host name as an argument. The module will wait for that device to announce a gaze sensor, will connect to it and start pushing the gaze data to the LSL outlet.
+The basic usage of the Pupil Invisible Gaze Relay module is to provide a device host name as an argument. The module will wait for that device to announce a gaze sensor, will connect to it and start pushing the gaze data to the LSL outlet named `pupil_invisible`.
 
 ```bash
 python3 -m pupil_invisible --host-name <DEVICE_NAME>
