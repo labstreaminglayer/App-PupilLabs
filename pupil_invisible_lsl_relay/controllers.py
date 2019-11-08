@@ -43,22 +43,37 @@ class DiscoveryController():
 
 class ConnectionController(DiscoveryController):
 
-    def __init__(self, host_name):
+    class Timeout(Exception):
+        pass
+
+    def __init__(self, host_name, timeout=None):
         self._target_host_name = host_name
         self._gaze_sensor = None
         super().__init__()
+        self._connection_did_timeout = False
+        if timeout is not None:
+            self._connection_timer = threading.Timer(timeout, self.on_connection_timeout)
+            self._connection_timer.start()
+        else:
+            self._connection_timer = None
 
     def cleanup(self):
+        if self._connection_timer:
+            self._connection_timer.cancel()
         self._disconnect_sensor()
         super().cleanup()
 
     def poll_events(self):
+        if self._connection_did_timeout:
+            raise ConnectionController.Timeout
         super().poll_events()
         if self._gaze_sensor:
             while self._gaze_sensor.has_notifications:
                 self._gaze_sensor.handle_notification()
 
     def fetch_gaze(self):
+        if self._connection_did_timeout:
+            raise ConnectionController.Timeout
         if self._gaze_sensor:
             yield from self._gaze_sensor.fetch_data()
 
@@ -72,12 +87,17 @@ class ConnectionController(DiscoveryController):
         if host_name == self._target_host_name:
             self._disconnect_sensor()
 
+    def on_connection_timeout(self):
+        self._connection_did_timeout = True
+
     def _connect_sensor(self, sensor_uuid):
         self._disconnect_sensor()
         gaze_sensor = self.network.sensor(sensor_uuid)
         self._gaze_sensor = gaze_sensor
         self._gaze_sensor.set_control_value("streaming", True)
         self._gaze_sensor.refresh_controls()
+        if self._connection_timer:
+            self._connection_timer.cancel()
         logger.debug(f"Sensor connected: {gaze_sensor}")
 
     def _disconnect_sensor(self):
