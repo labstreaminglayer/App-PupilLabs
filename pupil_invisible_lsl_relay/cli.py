@@ -13,11 +13,13 @@ logger = logging.getLogger(__name__)
 
 @click.command()
 @click.option("--host-name", default=None, help="Device (host) name to connect")
-def main(host_name: str):
+@click.option("--timeout", default=5.0, help="Time limit in seconds to try to connect to the device (only works with --host-name argument)")
+def main(host_name: str, timeout: float):
 
     if host_name is None:
         toggle_logging(enable=False)
         host_name = interactive_mode_get_host_name()
+        timeout = None  # Since the user picked a device from the discovered list, ignore the timeout
 
     if host_name is None:
         exit(0)
@@ -26,7 +28,7 @@ def main(host_name: str):
 
     gaze_relay = PupilInvisibleGazeRelay()
 
-    for gaze in gaze_data_stream(host_name):
+    for gaze in gaze_data_stream(host_name, connection_timeout=timeout):
         gaze_relay.push_gaze_sample(gaze)
 
 
@@ -43,8 +45,8 @@ def interactive_mode_get_host_name():
         interaction.cleanup()
 
 
-def gaze_data_stream(host_name):
-    connection = ConnectionController(host_name=host_name)
+def gaze_data_stream(host_name, connection_timeout):
+    connection = ConnectionController(host_name=host_name, timeout=connection_timeout)
     try:
         while True:
             connection.poll_events()
