@@ -3,7 +3,14 @@
 ## Installation
 
 ```bash
-pip3 install git+https://github.com/romanroibu/App-PupilLabs.git@pupil-invisible-relay
+git clone https://github.com/romanroibu/App-PupilLabs.git
+
+cd App-PupilLabs/
+git checkout pupil-invisible-relay
+
+# Use the Python 3 installation of your choice
+python -m pip install -U pip
+python -m pip install -r requirements.txt
 ```
 
 ## Usage
