@@ -7,6 +7,8 @@ if __name__ == "__main__":
         version="0.1",
         packages=['pupil_invisible_lsl_relay'],
         install_requires=[
+            "ndsi>=1.0.dev0",
+            "pyre",
             "pylsl>=1.12.2",
             "click>=7.0",
         ],
