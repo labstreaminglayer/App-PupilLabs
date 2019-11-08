@@ -109,15 +109,10 @@ class ConnectionController(DiscoveryController):
             logger.debug(f"Sensor disconnected: {gaze_sensor}")
 
 
-class InteractionController:
+class InteractionController(DiscoveryController):
 
     def __init__(self):
-        self._discovered_hosts = set()
-
-        self._discovery_controller = DiscoveryController()
-        self._discovery_controller.on_gaze_sensor_attach = lambda *args, **kwargs: self.on_gaze_sensor_attach(*args, **kwargs)
-        self._discovery_controller.on_gaze_sensor_detach = lambda *args, **kwargs: self.on_gaze_sensor_detach(*args, **kwargs)
-
+        super().__init__()
         self._initial_discovery_event = threading.Event()
         self._network_should_stop = threading.Event()
 
@@ -131,27 +126,26 @@ class InteractionController:
 
     def _discovery_run(self):
         while not self._network_should_stop.wait(1):
-            self._discovery_controller.poll_events()
-        self._discovery_controller.cleanup()
+            self.poll_events()
+        super().cleanup()  # NOTE: Only call super implementation, since it is the one running in the background thread.
 
     def cleanup(self):
         self._network_should_stop.set()
         self._network_thread.join()
-        self._discovery_controller = None
 
     def on_gaze_sensor_attach(self, host_name, sensor_uuid):
-        self._discovered_hosts.add(host_name)
+        super().on_gaze_sensor_attach(host_name, sensor_uuid)
         self._initial_discovery_event.set()
 
     def on_gaze_sensor_detach(self, host_name):
-        self._discovered_hosts.remove(host_name)
+        super().on_gaze_sensor_detach(host_name)
 
     def get_user_selected_host_name(self):
         if not self._initial_discovery_event.wait(1):
             return None
 
         RELOAD_COMMAND = "R"
-        shown_hosts = sorted(self._discovered_hosts)
+        shown_hosts = sorted(self.discovered_hosts)
 
         print("\n======================================")
         print("Please select a Pupil Invisible device:")
