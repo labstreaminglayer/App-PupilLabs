@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 class DiscoveryController():
 
     def __init__(self):
+        self.discovered_hosts = set()  # Set of discovered hosts with gaze sensors
         self.network = ndsi.Network(
             formats={ndsi.DataFormat.V4},
             callbacks=(self.on_event,)
@@ -35,10 +36,10 @@ class DiscoveryController():
             )
 
     def on_gaze_sensor_attach(self, host_name, sensor_uuid):
-        pass
+        self.discovered_hosts.add(host_name)
 
     def on_gaze_sensor_detach(self, host_name):
-        pass
+        self.discovered_hosts.remove(host_name)
 
 
 class ConnectionController(DiscoveryController):
