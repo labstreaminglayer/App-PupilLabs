@@ -55,6 +55,13 @@ def gaze_data_stream(host_name, connection_timeout):
                 yield gaze
     except KeyboardInterrupt:
         pass
+    except ConnectionController.Timeout:
+        print(f"===============================================")
+        print(f"Failed to discover device named \"{host_name}\"")
+        print(f"Discovered devices:")
+        for host_name in connection.discovered_hosts:
+            print(f"\t{host_name}")
+        print(f"===============================================")
     finally:
         connection.cleanup()
 
