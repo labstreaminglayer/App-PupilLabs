@@ -3,7 +3,7 @@
 ## Installation
 
 ```bash
-git clone https://github.com/romanroibu/App-PupilLabs.git
+git clone https://github.com/labstreaminglayer/App-PupilLabs.git
 
 cd App-PupilLabs/
 git checkout pupil-invisible-relay
