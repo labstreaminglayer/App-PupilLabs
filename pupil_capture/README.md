@@ -1,20 +1,20 @@
-# Pupil LSL Relay Plugin
+# Pupil Capture LSL Relay Plugin
 
-Plugin for _[Pupil Capture](https://github.com/pupil-labs/pupil/wiki/Pupil-Capture)_ that publishes realtime gaze data using the [lab streaming layer](https://github.com/sccn/labstreaminglayer) framework.
+Plugin for _[Pupil Capture](https://github.com/pupil-labs/pupil/releases/latest)_ that publishes realtime gaze data using the [lab streaming layer](https://github.com/sccn/labstreaminglayer) framework.
 
 ## Installation
 
- [user plugin directory](https://docs.pupil-labs.com/#plugin-guide)
+Please see our documentation on where to find the [user plugin directory](https://docs.pupil-labs.com/developer/core/plugin-api/#adding-a-plugin).
 
 1. Install `pylsl`
 2. Copy or symlink `pylsl` with all its content to the _plugin directory_.
-3. Copy [`pupil_lsl_relay.py`](pupil_lsl_relay.py) to the _plugin directory_.
+3. Copy [`pupil_capture_lsl_relay.py`](pupil_capture_lsl_relay.py) to the _plugin directory_.
 
 
 ## Usage
 
 1. Start _Pupil Capture_.
-2. [Open the _Pupil LSL Relay_ plugin](https://docs.pupil-labs.com/#open-a-plugin).
+2. [Open the _Pupil Capture LSL Relay_ plugin](https://docs.pupil-labs.com/core/software/pupil-capture/#plugins).
 3. Now the LSL outlet is ready to provide data to other inlets in the network.
 
 ## LSL Outlet
@@ -23,7 +23,7 @@ The plugin opens a single outlet named `pupil_capture` that follows the [Gaze Me
 
 See our [pupil-helpers](https://github.com/pupil-labs/pupil-helpers/tree/master/LabStreamingLayer) for examples on how to record and visualize the published data.
 
-The published LSL data is simply a flattened version (see `extract_*()` functions in `pupil_lsl_relay.py`) of the original Pupil gaze data stream. The stream's channels will be filled with best effort, i.e. if there is a monocular gaze datum the values for the opposite eye will be set to `NaN`. The actual pairing of pupil data to binocular gaze data happens in [Capture](https://github.com/pupil-labs/pupil/blob/master/pupil_src/shared_modules/calibration_routines/gaze_mappers.py#L95-L140) and is not a LSL specific behaviour. Therefore, it is possible to apply the same [flattening code](https://github.com/papr/App-PupilLabs/blob/master/pupil_lsl_relay.py#L226-L287) to offline calibrated gaze data and reproduce the stream published by the LSL outlet.
+The published LSL data is simply a flattened version (see `extract_*()` functions in `pupil_capture_lsl_relay.py`) of the original Pupil gaze data stream. The stream's channels will be filled with best effort, i.e. if there is a monocular gaze datum the values for the opposite eye will be set to `NaN`. The actual pairing of pupil data to binocular gaze data happens in [Capture](https://github.com/pupil-labs/pupil/blob/master/pupil_src/shared_modules/calibration_routines/gaze_mappers.py#L95-L140) and is not a LSL specific behaviour. Therefore, it is possible to apply the same [flattening code](https://github.com/papr/App-PupilLabs/blob/master/pupil_lsl_relay.py#L226-L287) to offline calibrated gaze data and reproduce the stream published by the LSL outlet.
 
 ## Data Format
 
