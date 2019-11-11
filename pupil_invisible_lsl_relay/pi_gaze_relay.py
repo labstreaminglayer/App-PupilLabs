@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 class PupilInvisibleGazeRelay:
-
     def __init__(self, outlet_uuid=None):
         self._channels = pi_gaze_channels()
         self._time_offset = time.time() - lsl.local_clock()
@@ -55,28 +54,32 @@ def pi_gaze_channels():
     channels = []
 
     # ScreenX, ScreenY: screen coordinates of the gaze cursor
-    channels.extend([
-        GazeChannel(
-            query=pi_extract_screen_query(i),
-            label="xy"[i],
-            eye="both",
-            metatype="Screen" + "XY"[i],
-            unit="pixels",
-            coordinate_system="world",
-        )
-        for i in range(2)
-    ])
+    channels.extend(
+        [
+            GazeChannel(
+                query=pi_extract_screen_query(i),
+                label="xy"[i],
+                eye="both",
+                metatype="Screen" + "XY"[i],
+                unit="pixels",
+                coordinate_system="world",
+            )
+            for i in range(2)
+        ]
+    )
 
     # PupilInvisibleTimestamp: original Pupil Invisible UNIX timestamp
-    channels.extend([
-        GazeChannel(
-            query=pi_extract_timestamp_query(),
-            label="pi_timestamp",
-            eye="both",
-            metatype="PupilInvisibleTimestamp",
-            unit="seconds"
-        )
-    ])
+    channels.extend(
+        [
+            GazeChannel(
+                query=pi_extract_timestamp_query(),
+                label="pi_timestamp",
+                eye="both",
+                metatype="PupilInvisibleTimestamp",
+                unit="seconds",
+            )
+        ]
+    )
 
     return channels
 
@@ -106,4 +109,3 @@ class GazeChannel:
         chan.append_child_value("unit", self.unit)
         if self.coordinate_system:
             chan.append_child_value("coordinate_system", self.coordinate_system)
-

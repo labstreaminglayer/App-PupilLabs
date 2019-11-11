@@ -7,13 +7,11 @@ import ndsi
 logger = logging.getLogger(__name__)
 
 
-class DiscoveryController():
-
+class DiscoveryController:
     def __init__(self):
         self.discovered_hosts = set()  # Set of discovered hosts with gaze sensors
         self.network = ndsi.Network(
-            formats={ndsi.DataFormat.V4},
-            callbacks=(self.on_event,)
+            formats={ndsi.DataFormat.V4}, callbacks=(self.on_event,)
         )
         self.network.start()
 
@@ -27,13 +25,10 @@ class DiscoveryController():
     def on_event(self, caller, event):
         if event["subject"] == "attach" and event["sensor_type"] == "gaze":
             self.on_gaze_sensor_attach(
-                host_name=event["host_name"],
-                sensor_uuid=event["sensor_uuid"]
+                host_name=event["host_name"], sensor_uuid=event["sensor_uuid"]
             )
         if event["subject"] == "detach":
-            self.on_gaze_sensor_detach(
-                host_name=event["host_name"]
-            )
+            self.on_gaze_sensor_detach(host_name=event["host_name"])
 
     def on_gaze_sensor_attach(self, host_name, sensor_uuid):
         self.discovered_hosts.add(host_name)
@@ -43,7 +38,6 @@ class DiscoveryController():
 
 
 class ConnectionController(DiscoveryController):
-
     class Timeout(Exception):
         pass
 
@@ -53,7 +47,9 @@ class ConnectionController(DiscoveryController):
         super().__init__()
         self._connection_did_timeout = False
         if timeout is not None:
-            self._connection_timer = threading.Timer(timeout, self.on_connection_timeout)
+            self._connection_timer = threading.Timer(
+                timeout, self.on_connection_timeout
+            )
             self._connection_timer.start()
         else:
             self._connection_timer = None
@@ -110,17 +106,13 @@ class ConnectionController(DiscoveryController):
 
 
 class InteractionController(DiscoveryController):
-
     def __init__(self):
         super().__init__()
         self._initial_discovery_event = threading.Event()
         self._network_should_stop = threading.Event()
 
         self._network_thread = threading.Thread(
-            target=self._discovery_run,
-            name="Host discovery",
-            args=(),
-            daemon=False
+            target=self._discovery_run, name="Host discovery", args=(), daemon=False
         )
         self._network_thread.start()
 

@@ -13,13 +13,19 @@ logger = logging.getLogger(__name__)
 
 @click.command()
 @click.option("--host-name", default=None, help="Device (host) name to connect")
-@click.option("--timeout", default=5.0, help="Time limit in seconds to try to connect to the device (only works with --host-name argument)")
+@click.option(
+    "--timeout",
+    default=5.0,
+    help="Time limit in seconds to try to connect to the device (only works with --host-name argument)",
+)
 def main(host_name: str, timeout: float):
 
     if host_name is None:
         toggle_logging(enable=False)
         host_name = interactive_mode_get_host_name()
-        timeout = None  # Since the user picked a device from the discovered list, ignore the timeout
+        timeout = (
+            None
+        )  # Since the user picked a device from the discovered list, ignore the timeout
 
     if host_name is None:
         exit(0)
@@ -57,7 +63,7 @@ def gaze_data_stream(host_name, connection_timeout):
         pass
     except ConnectionController.Timeout:
         print(f"===============================================")
-        print(f"Failed to discover device named \"{host_name}\"")
+        print(f'Failed to discover device named "{host_name}"')
         print(f"Discovered devices:")
         for host_name in connection.discovered_hosts:
             print(f"\t{host_name}")
