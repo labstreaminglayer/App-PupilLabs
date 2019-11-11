@@ -4,6 +4,9 @@ import uuid
 import pylsl as lsl
 
 
+VERSION = "1.0"
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -41,6 +44,7 @@ def pi_streaminfo(outlet_uuid, channels):
         channel_format=lsl.cf_double64,
         source_id=outlet_uuid,
     )
+    stream_info.desc().append_child_value("pupil_invisible_lsl_relay_version", VERSION)
     xml_channels = stream_info.desc().append_child("channels")
     for chan in channels:
         chan.append_to(xml_channels)
