@@ -6,7 +6,6 @@
 git clone https://github.com/labstreaminglayer/App-PupilLabs.git
 
 cd App-PupilLabs/
-git checkout pupil-invisible-relay
 
 # Use the Python 3 installation of your choice
 python -m pip install -U pip
