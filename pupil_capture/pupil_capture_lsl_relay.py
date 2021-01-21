@@ -18,7 +18,7 @@ import pylsl as lsl
 from plugin import Plugin
 from pyglui import ui
 
-VERSION = '2.0'
+VERSION = '2.1'
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -241,7 +241,12 @@ def make_extract_eye_center_3d(eye, dim):
     def extract_eye_center_3d(gaze):
         topic = gaze["topic"]
         if topic.endswith("3d.01."):
-            return gaze["eye_centers_3d"][eye][dim]
+            if eye in gaze["eye_centers_3d"]:
+                return gaze["eye_centers_3d"][eye][dim]
+            elif str(eye) in gaze["eye_centers_3d"]:
+                return gaze["eye_centers_3d"][str(eye)][dim]
+            else:
+                raise KeyError(f"Expected field `{eye}` in {gaze['eye_centers_3d']}")
         elif topic.endswith("3d.{}.".format(eye)):
             return gaze["eye_center_3d"][dim]
         else:
@@ -254,7 +259,12 @@ def make_extract_gaze_normal_3d(eye, dim):
     def extract_gaze_normal_3d(gaze):
         topic = gaze["topic"]
         if topic.endswith("3d.01."):
-            return gaze["gaze_normals_3d"][eye][dim]
+            if eye in gaze["gaze_normals_3d"]:
+                return gaze["gaze_normals_3d"][eye][dim]
+            elif str(eye) in gaze["gaze_normals_3d"]:
+                return gaze["gaze_normals_3d"][str(eye)][dim]
+            else:
+                raise KeyError(f"Expected field `{eye}` in {gaze['gaze_normals_3d']}")
         elif topic.endswith("3d.{}.".format(eye)):
             return gaze["gaze_normal_3d"][dim]
         else:
