@@ -45,4 +45,4 @@ The published LSL data is simply a flattened version (see `extract_*()` function
 
 The `Pupil LSL Relay` plugin adjusts Capture's timebase to synchronize Capture's own clock with the `pylsl.local_clock()`. This allows the recording of native Capture timestamps and removes the necessity of manually synchronize timestamps after the effect.
 
-**Warning**: The time synchronization will potentially break if other time alternating actors (e.g. the `Time Sync` plugin or `hmd-eyes`) are active. 
+**Warning**: The time synchronization will potentially break if other time alternating actors (e.g. the `Time Sync` plugin or `hmd-eyes`) are active. Note that hmd-eyes v1.4 and later no longer adjusts Pupil Capture's clock and is therefore compatible with the LSL Relay Plugin.
