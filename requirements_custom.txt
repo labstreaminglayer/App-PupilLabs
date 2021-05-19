@@ -1,2 +1,1 @@
 -e git://github.com/pupil-labs/pyndsi/@master#egg=ndsi
--e git://github.com/zeromq/pyre@master#egg=pyre
