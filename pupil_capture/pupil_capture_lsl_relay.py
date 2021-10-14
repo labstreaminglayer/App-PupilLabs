@@ -8,17 +8,17 @@
 ----------------------------------------------------------------------------------~(*)
 """
 
-from time import sleep
 import logging
 import uuid
+from time import sleep
 
 import numpy as np
 import pylsl as lsl
-
 from plugin import Plugin
 from pyglui import ui
+from version_utils import parse_version
 
-VERSION = '2.1'
+VERSION = "2.1"
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -27,10 +27,15 @@ logger.setLevel(logging.DEBUG)
 class Pupil_LSL_Relay(Plugin):
     """Plugin to relay Pupil Capture data to LSL"""
 
-    icon_chr = "LR"
+    icon_chr = "LSL\nrelay"
+    icon_pos_delta = (0, -7)
+    icon_size_delta = -15
+    icon_line_height = 0.8
 
     def __init__(self, g_pool, outlet_uuid=None):
         super().__init__(g_pool)
+        if g_pool.version < parse_version("3.4.59"):
+            self.icon_chr = "RL"  # no icon custimization available yet
         debug_ts_before = g_pool.get_timestamp()
         time_dif = g_pool.get_now() - lsl.local_clock()
         g_pool.timebase.value = time_dif
@@ -81,7 +86,7 @@ class Pupil_LSL_Relay(Plugin):
 
     def cleanup(self):
         """gets called when the plugin get terminated.
-           This happens either voluntarily or forced.
+        This happens either voluntarily or forced.
         """
         self.outlet = None
 
