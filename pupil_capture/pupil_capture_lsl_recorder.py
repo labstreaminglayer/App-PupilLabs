@@ -94,8 +94,8 @@ class Pupil_LSL_Recorder(Plugin):
             return
         yield from (
             stream
-            for stream_id, stream in self._streams.items()
-            if self._streams_should_record[stream_id]
+            for stream in self._streams.values()
+            if self._streams_should_record[_stream_label(stream)]
         )
 
     def resolve_lsl_streams(self):
