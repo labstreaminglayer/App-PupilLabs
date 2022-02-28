@@ -8,13 +8,12 @@
 ----------------------------------------------------------------------------------~(*)
 """
 
-from time import sleep
 import logging
 import uuid
+from time import sleep
 
 import numpy as np
 import pylsl as lsl
-
 from plugin import Plugin
 from pyglui import ui
 
