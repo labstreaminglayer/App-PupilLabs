@@ -49,7 +49,7 @@ The `Pupil LSL Relay` plugin adjusts Capture's timebase to synchronize Capture's
 
 ### Synchronizing Other Pupil Core Data Post-hoc
 
-The [LSL LabRecorder](https://github.com/labstreaminglayer/App-LabRecorder) records LSL data streams to XDF (extensible data format) files. These include the [native stream time (as measured by the `pylsl.local_clock()`) as well as the necessary clock offset to the synchronized time domain between the recorded streams](https://github.com/sccn/xdf/wiki/Specifications#general-comments). Most XDF importers will apply the clock offset when loading the recorded data, yielding time-synchronized samples. 
+The [LSL LabRecorder](https://github.com/labstreaminglayer/App-LabRecorder) records LSL data streams to XDF (extensible data format) files. These include the [native stream time (as measured by the `pylsl.local_clock()`) as well as the necessary clock offset to the synchronized time domain between the recorded streams](https://github.com/sccn/xdf/wiki/Specifications#general-comments). Most XDF importers will apply the clock offset when loading the recorded data, yielding time-synchronized samples.
 
 Should you ever want to synchronize other data recorded by Pupil Capture that is not published via LSL, you can do so by building a time-mapping between the original stream time and the synchronized time. In this case, your XDF importer needs to support loading the recorded samples without automatically applying the corresponding clock offset.
 
