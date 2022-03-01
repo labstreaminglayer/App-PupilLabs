@@ -1,8 +1,8 @@
 import logging
 import threading
 import typing as T
-import ndsi
 
+import ndsi
 
 logger = logging.getLogger(__name__)
 

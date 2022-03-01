@@ -1,8 +1,8 @@
 import logging
 import time
 import uuid
-import pylsl as lsl
 
+import pylsl as lsl
 
 VERSION = "1.0"
 
@@ -22,7 +22,7 @@ class PupilInvisibleGazeRelay:
             sample = [chan.query(gaze) for chan in self._channels]
             timestamp = gaze.timestamp - self._time_offset
         except Exception as exc:
-            logger.error("Error extracting gaze sample: {}".format(exc))
+            logger.error(f"Error extracting gaze sample: {exc}")
             logger.debug(str(gaze))
             return
         # push_chunk might be more efficient but does not
