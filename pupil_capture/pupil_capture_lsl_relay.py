@@ -8,17 +8,16 @@
 ----------------------------------------------------------------------------------~(*)
 """
 
-from time import sleep
 import logging
 import uuid
+from time import sleep
 
 import numpy as np
 import pylsl as lsl
-
 from plugin import Plugin
 from pyglui import ui
 
-VERSION = '2.1'
+VERSION = "2.1"
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -37,9 +36,9 @@ class Pupil_LSL_Relay(Plugin):
         debug_ts_after = g_pool.get_timestamp()
         debug_ts_lsl = lsl.local_clock()
         logger.info("Synchronized time epoch to LSL clock")
-        logger.debug("Time before synchronization: {}".format(debug_ts_before))
-        logger.debug("Time after synchronization: {}".format(debug_ts_after))
-        logger.debug("LabStreamingLayer time: {}".format(debug_ts_lsl))
+        logger.debug(f"Time before synchronization: {debug_ts_before}")
+        logger.debug(f"Time after synchronization: {debug_ts_after}")
+        logger.debug(f"LabStreamingLayer time: {debug_ts_lsl}")
 
         self.outlet_uuid = outlet_uuid or str(uuid.uuid4())
         self.outlet = self.construct_outlet()
@@ -52,7 +51,7 @@ class Pupil_LSL_Relay(Plugin):
         try:
             sample = self.extract_gaze_sample(gaze)
         except Exception as exc:
-            logger.error("Error extracting gaze sample: {}".format(exc))
+            logger.error(f"Error extracting gaze sample: {exc}")
             logger.debug(str(gaze))
             return
         # push_chunk might be more efficient but does not
@@ -81,7 +80,7 @@ class Pupil_LSL_Relay(Plugin):
 
     def cleanup(self):
         """gets called when the plugin get terminated.
-           This happens either voluntarily or forced.
+        This happens either voluntarily or forced.
         """
         self.outlet = None
 
@@ -181,11 +180,11 @@ class Pupil_LSL_Relay(Plugin):
         return [
             _Channel(
                 query=make_extract_diameter_2d(eye),
-                label="diameter{}_2d".format(eye),
+                label=f"diameter{eye}_2d",
                 eye=("right", "left")[eye],
                 metatype="Diameter",
                 unit="pixels",
-                coordinate_system="eye{}".format(eye),
+                coordinate_system=f"eye{eye}",
             )
             for eye in range(2)
         ]
@@ -194,11 +193,11 @@ class Pupil_LSL_Relay(Plugin):
         return [
             _Channel(
                 query=make_extract_diameter_3d(eye),
-                label="diameter{}_3d".format(eye),
+                label=f"diameter{eye}_3d",
                 eye=("right", "left")[eye],
                 metatype="Diameter",
                 unit="mm",
-                coordinate_system="eye{}".format(eye),
+                coordinate_system=f"eye{eye}",
             )
             for eye in range(2)
         ]
@@ -247,7 +246,7 @@ def make_extract_eye_center_3d(eye, dim):
                 return gaze["eye_centers_3d"][str(eye)][dim]
             else:
                 raise KeyError(f"Expected field `{eye}` in {gaze['eye_centers_3d']}")
-        elif topic.endswith("3d.{}.".format(eye)):
+        elif topic.endswith(f"3d.{eye}."):
             return gaze["eye_center_3d"][dim]
         else:
             return np.nan
@@ -265,7 +264,7 @@ def make_extract_gaze_normal_3d(eye, dim):
                 return gaze["gaze_normals_3d"][str(eye)][dim]
             else:
                 raise KeyError(f"Expected field `{eye}` in {gaze['gaze_normals_3d']}")
-        elif topic.endswith("3d.{}.".format(eye)):
+        elif topic.endswith(f"3d.{eye}."):
             return gaze["gaze_normal_3d"][dim]
         else:
             return np.nan

@@ -7,7 +7,6 @@ import click
 from .controllers import ConnectionController, InteractionController
 from .pi_gaze_relay import PupilInvisibleGazeRelay
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -23,9 +22,7 @@ def main(host_name: str, timeout: float):
     if host_name is None:
         toggle_logging(enable=False)
         host_name = interactive_mode_get_host_name()
-        timeout = (
-            None
-        )  # Since the user picked a device from the discovered list, ignore the timeout
+        timeout = None  # Since the user picked a device from the discovered list, ignore the timeout
 
     if host_name is None:
         exit(0)
@@ -56,9 +53,7 @@ def gaze_data_stream(host_name, connection_timeout):
     try:
         while True:
             connection.poll_events()
-            for gaze in connection.fetch_gaze():
-                # logger.debug(gaze)
-                yield gaze
+            yield from connection.fetch_gaze()
     except KeyboardInterrupt:
         pass
     except ConnectionController.Timeout:
