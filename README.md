@@ -1,3 +1,5 @@
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/labstreaminglayer/App-PupilLabs/master.svg)](https://results.pre-commit.ci/latest/github/labstreaminglayer/App-PupilLabs/master)
+
 # App-PupilLabs
 
 This repository contains implementations of relays that publish realtime gaze data using the [lab streaming layer](https://github.com/sccn/labstreaminglayer) framework.
