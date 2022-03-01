@@ -102,11 +102,11 @@ def diameter_2d_channels():
     return [
         Channel(
             query=make_extract_diameter_2d(eye),
-            label="diameter{}_2d".format(eye),
+            label=f"diameter{eye}_2d",
             eye=("right", "left")[eye],
             metatype="Diameter",
             unit="pixels",
-            coordinate_system="eye{}".format(eye),
+            coordinate_system=f"eye{eye}",
         )
         for eye in range(2)
     ]
@@ -116,11 +116,11 @@ def diameter_3d_channels():
     return [
         Channel(
             query=make_extract_diameter_3d(eye),
-            label="diameter{}_3d".format(eye),
+            label=f"diameter{eye}_3d",
             eye=("right", "left")[eye],
             metatype="Diameter",
             unit="mm",
-            coordinate_system="eye{}".format(eye),
+            coordinate_system=f"eye{eye}",
         )
         for eye in range(2)
     ]
@@ -150,7 +150,7 @@ def make_extract_eye_center_3d(eye, dim):
                 return gaze["eye_centers_3d"][str(eye)][dim]
             else:
                 raise KeyError(f"Expected field `{eye}` in {gaze['eye_centers_3d']}")
-        elif topic.endswith("3d.{}.".format(eye)):
+        elif topic.endswith(f"3d.{eye}."):
             return gaze["eye_center_3d"][dim]
         else:
             return np.nan
@@ -168,7 +168,7 @@ def make_extract_gaze_normal_3d(eye, dim):
                 return gaze["gaze_normals_3d"][str(eye)][dim]
             else:
                 raise KeyError(f"Expected field `{eye}` in {gaze['gaze_normals_3d']}")
-        elif topic.endswith("3d.{}.".format(eye)):
+        elif topic.endswith(f"3d.{eye}."):
             return gaze["gaze_normal_3d"][dim]
         else:
             return np.nan

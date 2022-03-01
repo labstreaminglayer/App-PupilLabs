@@ -57,9 +57,9 @@ class Pupil_LSL_Relay(Plugin):
         debug_ts_after = self.g_pool.get_timestamp()
         debug_ts_lsl = lsl.local_clock()
         logger.info("Synchronized time epoch to LSL clock")
-        logger.debug("Time before synchronization: {}".format(debug_ts_before))
-        logger.debug("Time after synchronization: {}".format(debug_ts_after))
-        logger.debug("LabStreamingLayer time: {}".format(debug_ts_lsl))
+        logger.debug(f"Time before synchronization: {debug_ts_before}")
+        logger.debug(f"Time after synchronization: {debug_ts_after}")
+        logger.debug(f"LabStreamingLayer time: {debug_ts_lsl}")
 
     def setup_outlets(self, previous_outlets: Iterable[Tuple[str, str]]):
         """Initialize all available outlets and restoring previous source ids
