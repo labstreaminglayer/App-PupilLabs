@@ -14,6 +14,7 @@ from typing import Iterable, Tuple
 import pylsl as lsl
 from plugin import Plugin
 from pyglui import ui
+from version_utils import parse_version
 
 from .outlet import Outlet
 from .version import VERSION
@@ -30,7 +31,10 @@ class Pupil_LSL_Relay(Plugin):
     samples. The latter are based on the outlet's `event_key`.
     """
 
-    icon_chr = "LR"
+    icon_chr = "LSL\nrelay"
+    icon_pos_delta = (0, -7)
+    icon_size_delta = -15
+    icon_line_height = 0.8
     order = 0.89
     """plugin order
 
@@ -47,6 +51,8 @@ class Pupil_LSL_Relay(Plugin):
         outlet_uuid=...,  # type: ignore
     ):
         super().__init__(g_pool)
+        if g_pool.version < parse_version("3.4.59"):
+            self.icon_chr = "RL"  # no icon custimization available yet
         self.adjust_pupil_to_lsl_time()
         self.setup_outlets(previous_outlets)
 
