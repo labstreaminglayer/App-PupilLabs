@@ -158,7 +158,7 @@ def fixation_duration_channel():
 
 def fixation_method_channel():
     return Channel(
-        query=extract_duration,
+        query=extract_method,
         label="method",
         eye="both",
         metatype="com.pupil-labs.fixation.method",
