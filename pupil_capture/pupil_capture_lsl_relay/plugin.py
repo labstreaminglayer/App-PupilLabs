@@ -74,9 +74,9 @@ class Pupil_LSL_Relay(Plugin):
         """
         outlet_config = {name: None for name in Outlet.available_type_names()}
         for name, uuid in previous_outlets:
-            try:
+            if name in outlet_config:
                 outlet_config[name] = uuid
-            except KeyError:
+            else:
                 logger.warning(f"Previous outlet type `{name}` not available!")
         self._outlets: Iterable[Outlet] = [
             Outlet.setup(name, uuid) for name, uuid in outlet_config.items()
