@@ -39,6 +39,24 @@ and is not a LSL specific behaviour. Therefore, it is possible to apply the same
 [flattening code](https://github.com/papr/App-PupilLabs/blob/master/pupil_lsl_relay.py#L226-L287)
 to offline calibrated gaze data and reproduce the stream published by the LSL outlet.
 
+### Scene Camera Fixations
+
+**Channel name:** `pupil_capture_fixations`
+**Channel format:** Custom `Fixations` format
+
+Exposes fixations by Pupil Capture's [fixation detector](https://docs.pupil-labs.com/core/terminology/#fixations).
+
+> Fixations are detected based on a dispersion threshold in terms of degrees of visual
+> angle with a minimum duration. Fixations are published as soon as they comply with the
+> constraints (dispersion and duration). This might result in a series of overlapping
+> fixations.
+
+- `fixation id` - incrementing counter, duplicated values possible
+- `confidence` - mean confidence value of the gaze data used for this fixation
+- `norm_pos_x/y` - mean location of the gaze data used for this fixation
+- `dispersion` - fixation dispersion, in degree
+- `duration` - fixation duration, in milliseconds
+
 ## Data Format
 
 - `confidence`: Normalized (0-1) confidence

@@ -127,6 +127,44 @@ def diameter_3d_channels():
     ]
 
 
+def fixation_id_channel():
+    return Channel(
+        query=extract_fixation_id,
+        label="fixation id",
+        eye="both",
+        metatype="com.pupil-labs.fixation.id",
+    )
+
+
+def fixation_dispersion_channel():
+    return Channel(
+        query=extract_dispersion,
+        label="dispersion",
+        eye="both",
+        metatype="com.pupil-labs.fixation.dispersion",
+        unit="degree",
+    )
+
+
+def fixation_duration_channel():
+    return Channel(
+        query=extract_duration,
+        label="duration",
+        eye="both",
+        metatype="com.pupil-labs.fixation.duration",
+        unit="milliseconds",
+    )
+
+
+def fixation_method_channel():
+    return Channel(
+        query=extract_duration,
+        label="method",
+        eye="both",
+        metatype="com.pupil-labs.fixation.method",
+    )
+
+
 def extract_confidence(gaze):
     return gaze["confidence"]
 
@@ -199,3 +237,23 @@ def make_extract_diameter_3d(eye):
             return np.nan
 
     return extract_diameter_3d
+
+
+def extract_fixation_id(fixation):
+    return fixation["id"]
+
+
+def extract_dispersion(fixation):
+    return fixation["dispersion"]
+
+
+def extract_duration(fixation):
+    return fixation["duration"]
+
+
+def extract_method(fixation):
+    """Possible `method` field values and their mapping:
+    - `2d gaze` -> 2.0
+    - `3d gaze` -> 3.0
+    """
+    return 2 if fixation["method"].startswith(2) else 3
