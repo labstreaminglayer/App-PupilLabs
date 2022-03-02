@@ -12,7 +12,7 @@ from pylsl import XMLElement
 
 
 class Channel:
-    def __init__(self, query, label, eye, metatype, unit, coordinate_system=None):
+    def __init__(self, query, label, eye, metatype, unit=None, coordinate_system=None):
         self.label = label
         self.eye = eye
         self.metatype = metatype
@@ -25,7 +25,8 @@ class Channel:
         chan.append_child_value("label", self.label)
         chan.append_child_value("eye", self.eye)
         chan.append_child_value("type", self.metatype)
-        chan.append_child_value("unit", self.unit)
+        if self.unit:
+            chan.append_child_value("unit", self.unit)
         if self.coordinate_system:
             chan.append_child_value("coordinate_system", self.coordinate_system)
 
