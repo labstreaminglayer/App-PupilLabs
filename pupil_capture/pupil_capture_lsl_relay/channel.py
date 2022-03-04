@@ -256,4 +256,4 @@ def extract_method(fixation):
     - `2d gaze` -> 2.0
     - `3d gaze` -> 3.0
     """
-    return 2 if fixation["method"].startswith(2) else 3
+    return 2 if fixation["method"].startswith("2") else 3
