@@ -12,7 +12,7 @@ from pylsl import XMLElement
 
 
 class Channel:
-    def __init__(self, query, label, eye, metatype, unit, coordinate_system=None):
+    def __init__(self, query, label, eye, metatype, unit=None, coordinate_system=None):
         self.label = label
         self.eye = eye
         self.metatype = metatype
@@ -25,7 +25,8 @@ class Channel:
         chan.append_child_value("label", self.label)
         chan.append_child_value("eye", self.eye)
         chan.append_child_value("type", self.metatype)
-        chan.append_child_value("unit", self.unit)
+        if self.unit:
+            chan.append_child_value("unit", self.unit)
         if self.coordinate_system:
             chan.append_child_value("coordinate_system", self.coordinate_system)
 
@@ -126,6 +127,44 @@ def diameter_3d_channels():
     ]
 
 
+def fixation_id_channel():
+    return Channel(
+        query=extract_fixation_id,
+        label="fixation id",
+        eye="both",
+        metatype="com.pupil-labs.fixation.id",
+    )
+
+
+def fixation_dispersion_channel():
+    return Channel(
+        query=extract_dispersion,
+        label="dispersion",
+        eye="both",
+        metatype="com.pupil-labs.fixation.dispersion",
+        unit="degree",
+    )
+
+
+def fixation_duration_channel():
+    return Channel(
+        query=extract_duration,
+        label="duration",
+        eye="both",
+        metatype="com.pupil-labs.fixation.duration",
+        unit="milliseconds",
+    )
+
+
+def fixation_method_channel():
+    return Channel(
+        query=extract_method,
+        label="method",
+        eye="both",
+        metatype="com.pupil-labs.fixation.method",
+    )
+
+
 def extract_confidence(gaze):
     return gaze["confidence"]
 
@@ -198,3 +237,23 @@ def make_extract_diameter_3d(eye):
             return np.nan
 
     return extract_diameter_3d
+
+
+def extract_fixation_id(fixation):
+    return fixation["id"]
+
+
+def extract_dispersion(fixation):
+    return fixation["dispersion"]
+
+
+def extract_duration(fixation):
+    return fixation["duration"]
+
+
+def extract_method(fixation):
+    """Possible `method` field values and their mapping:
+    - `2d gaze` -> 2.0
+    - `3d gaze` -> 3.0
+    """
+    return 2 if fixation["method"].startswith("2") else 3
