@@ -9,8 +9,7 @@
 """
 import abc
 import logging
-from collections.abc import Sequence
-from typing import Optional
+from typing import Optional, Sequence
 from uuid import uuid4 as generate_uuid
 
 import pylsl as lsl
