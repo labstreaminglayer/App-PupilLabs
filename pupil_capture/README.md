@@ -15,7 +15,8 @@ Please see our documentation on where to find the [user plugin directory](https:
 
 1. Start _Pupil Capture_.
 2. [Open the _Pupil Capture LSL Relay_ plugin](https://docs.pupil-labs.com/core/software/pupil-capture/#plugins).
-3. Now the LSL outlet is ready to provide data to other inlets in the network.
+3. Now the LSL outlet show up in other LSL viewer and recording applications.
+4. Before data can be relayed, you need to perform a successful calibration.
 
 ## LSL Outlet
 
