@@ -9,13 +9,15 @@ from plugin import Plugin
 from pyglui import ui
 from version_utils import parse_version
 
+from .recorder import StreamRecorder, _stream_label
+
 VERSION = "1.0"
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class Pupil_LSL_Recorder(Plugin):
+class LSL_CSV_Recorder(Plugin):
     icon_chr = "LSL\nrec"
     icon_pos_delta = (0, -6)
     icon_size_delta = -15
@@ -77,7 +79,7 @@ class Pupil_LSL_Recorder(Plugin):
             return
         self._set_recording_state(True)
         self._stream_recorders = [
-            StreamRecorder.setup(stream, directory, self.g_pool.get_timestamp)
+            CSVStreamRecorder(stream, directory, self.g_pool.get_timestamp)
             for stream in self.streams_to_record()
         ]
 
@@ -125,56 +127,30 @@ class Pupil_LSL_Recorder(Plugin):
         self._streams_menu.append(ui.Switch(label, self._streams_should_record))
 
 
-def _stream_label(stream):
-    return f"{stream.name()} ({stream.hostname()})"
-
-
-class StreamRecorder(T.NamedTuple):
-    info: lsl.StreamInfo
-    inlet: lsl.StreamInlet
-    file_handle: T.TextIO
-    csv_writer: csv.writer
-    pupil_clock: T.Callable[[], float]
-
-    @staticmethod
-    def setup(stream, rec_dir, pupil_clock, timeout=1.0):
-        inlet = lsl.StreamInlet(stream)
-        info = inlet.info(timeout=timeout)
-        inlet.time_correction(timeout=timeout)
-        inlet.open_stream(timeout=timeout)
+class CSVStreamRecorder(StreamRecorder):
+    def __init__(
+        self,
+        stream: lsl.StreamInfo,
+        rec_dir: str,
+        pupil_clock: T.Callable[[], float],
+        timeout: float = 1.0,
+    ) -> None:
+        super().__init__(stream, rec_dir, pupil_clock, timeout)
         file_name = f"lsl_{stream.name()}_{stream.hostname()}_{stream.source_id()}.csv"
         file_path = os.path.join(rec_dir, file_name)
-        file_handle = open(file_path, "w")
-        csv_writer = csv.writer(file_handle)
-        recorder = StreamRecorder(
-            info=info,
-            inlet=inlet,
-            file_handle=file_handle,
-            csv_writer=csv_writer,
-            pupil_clock=pupil_clock,
-        )
-        recorder._record_header()
-        recorder.record_available_data()
-        return recorder
-
-    def record_available_data(self):
-        try:
-            pupil_lsl_offset = self.pupil_clock() - lsl.local_clock()
-            pupil_lsl_offset += self.inlet.time_correction()
-            while self._record_chunk(pupil_lsl_offset):
-                pass  # loop breaks as soon as available data has been processed
-        except lsl.LostError:
-            logger.warning(f"Lost connection to LSL stream: {_stream_label(self.info)}")
+        self.file_handle = open(file_path, "w")
+        self.csv_writer = csv.writer(self.file_handle)
+        self._record_header()
+        self.record_available_data()
 
     def close(self):
-        self.record_available_data()
+        super().close()
         self.file_handle.close()
-        self.inlet.close_stream()
 
     def _record_header(self):
         self.csv_writer.writerow(self._csv_header())
 
-    def _record_chunk(self, timestamp_offset):
+    def _record_chunk(self, timestamp_offset: float):
         chunk = self.inlet.pull_chunk()
         rows = [
             itertools.chain((ts + timestamp_offset,), datum)
