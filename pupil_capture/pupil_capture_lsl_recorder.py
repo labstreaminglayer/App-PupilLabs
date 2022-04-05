@@ -185,6 +185,12 @@ class StreamRecorder(T.NamedTuple):
 
     def _csv_header(self):
         yield "timestamp"
+        labels = list(self._channel_labels())
+        if not labels:
+            labels = (f"channel_{i}" for i in range(self.info.channel_count()))
+        yield from labels
+
+    def _channel_labels(self):
         description = self.info.desc()
         channel = description.child("channels").first_child()
         while not channel.empty():
