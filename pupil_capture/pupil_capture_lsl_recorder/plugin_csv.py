@@ -43,14 +43,20 @@ class LSL_CSV_Recorder(Plugin):
     def init_ui(self):
         """Initializes sidebar menu"""
         self.add_menu()
-        self.menu.label = "LSL Recorder"
+        self.menu.label = "CSV LSL Recorder"
         self.menu.append(
             ui.Info_Text(
                 f"Version {VERSION} - "
                 "Select and record LSL streams in Pupil Capture time."
             )
         )
-        self.menu.append(ui.Info_Text("FURTHER DESCRIPTION"))
+        self.menu.append(
+            ui.Info_Text(
+                "This plugin uses the LSL framework to receive data from other LSL "
+                "sources (outlets) and stores it in CSV format as part of the native "
+                "Pupil Capture recordings."
+            )
+        )
         self._streams_menu = ui.Growing_Menu("Streams to record")
         self.menu.append(self._streams_menu)
 
