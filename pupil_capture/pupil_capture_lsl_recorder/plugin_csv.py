@@ -1,3 +1,21 @@
+"""LSL CSV Recorder
+
+Record incoming LSL streams as part of the native Pupil Capture recordings. Adjusts
+time to Pupil Capture time.
+
+File format: CSV
+
+Changes
+^^^^^^^
+
+- 1.1:
+
+  - Generate CSV channel labels from channel_count if outlet description is empty
+  - Refactor code
+
+- 1.0: initial version
+"""
+
 import csv
 import itertools
 import logging
@@ -11,7 +29,7 @@ from version_utils import parse_version
 
 from .recorder import StreamRecorder, _stream_label
 
-VERSION = "1.0"
+VERSION = "1.1"
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
