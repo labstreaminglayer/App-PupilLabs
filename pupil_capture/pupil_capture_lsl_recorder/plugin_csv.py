@@ -43,7 +43,7 @@ class LSL_CSV_Recorder(Plugin):
     def init_ui(self):
         """Initializes sidebar menu"""
         self.add_menu()
-        self.menu.label = "CSV LSL Recorder"
+        self.menu.label = "LSL CSV Recorder"
         self.menu.append(
             ui.Info_Text(
                 f"Version {VERSION} - "

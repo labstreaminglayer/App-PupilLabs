@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class Pupil_LSL_Relay(Plugin):
+class LSL_Data_Relay(Plugin):
     """Plugin to relay Pupil Capture data to LSL
 
     Initializes one outlet for every available type, e.g. scene camera gaze.
