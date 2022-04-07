@@ -38,6 +38,7 @@ class StreamRecorder(abc.ABC):
 
     def close(self):
         self.record_available_data()
+        self.inlet.flush()
         self.inlet.close_stream()
 
     @abc.abstractmethod
