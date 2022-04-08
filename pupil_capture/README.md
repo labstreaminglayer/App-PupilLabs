@@ -1,6 +1,7 @@
-# Pupil Capture LSL Relay Plugin
+# Pupil Capture LSL Plugins
 
-Plugin for _[Pupil Capture](https://github.com/pupil-labs/pupil/releases/latest)_ that publishes realtime gaze data using the [lab streaming layer](https://github.com/sccn/labstreaminglayer) framework.
+Plugins for _[Pupil Capture](https://github.com/pupil-labs/pupil/releases/latest)_ that
+publish or receive realtime data using the [lab streaming layer](https://github.com/sccn/labstreaminglayer) framework.
 
 ## Installation
 
@@ -8,22 +9,30 @@ Please see our documentation on where to find the [user plugin directory](https:
 
 1. Install `pylsl`
 2. Copy or symlink `pylsl` with all its content to the _plugin directory_.
-3. Copy [`pupil_capture_lsl_relay`](pupil_capture_lsl_relay) folder to the _plugin directory_.
+3. Copy the corresponding plugins (`pupil_capture_lsl_recorder.py` file or `pupil_capture_lsl_relay`
+   folder) to the _plugin directory_.
 
-
-## Usage
+## General Usage
 
 1. Start _Pupil Capture_.
-2. [Open the _Pupil Capture LSL Relay_ plugin](https://docs.pupil-labs.com/core/software/pupil-capture/#plugins).
-3. Now the LSL outlet show up in other LSL viewer and recording applications.
-4. Before data can be relayed, you need to perform a successful calibration.
+2. [Enable the plugin in the plugin manager menu](https://docs.pupil-labs.com/core/software/pupil-capture/#plugins).
 
-## LSL Outlet
+## LSL Recorder
+
+The LSL recorder plugin receives external LSL streams and stores their data as part of a
+Pupil Capture recording in CSV format. In addition, it aligns the incoming data stream
+temporally with the remaining recording.
+
+## LSL Relay
+After enabling the plugin the LSL outlet show up in other LSL viewer and recording applications.
+**Note:ß** Before data can be relayed, you need to perform a successful calibration.
+
+### LSL Outlet
 
 The plugin opens LSL outlets for various Pupil Capture data sources. Their names are
 prefixed with `"pupil_capture"`
 
-### Scene Camera Gaze
+#### Scene Camera Gaze
 
 **Channel name:** `pupil_capture`
 **Channel format:** [Gaze Meta Data](https://github.com/sccn/xdf/wiki/Gaze-Meta-Data)
@@ -40,7 +49,7 @@ and is not a LSL specific behaviour. Therefore, it is possible to apply the same
 [flattening code](https://github.com/papr/App-PupilLabs/blob/master/pupil_lsl_relay.py#L226-L287)
 to offline calibrated gaze data and reproduce the stream published by the LSL outlet.
 
-### Scene Camera Fixations
+#### Scene Camera Fixations
 
 **Channel name:** `pupil_capture_fixations`
 **Channel format:** Custom `Fixations` format
@@ -58,7 +67,7 @@ Exposes fixations by Pupil Capture's [fixation detector](https://docs.pupil-labs
 - `dispersion` - fixation dispersion, in degree
 - `duration` - fixation duration, in milliseconds
 
-## Data Format
+### Data Format
 
 - `confidence`: Normalized (0-1) confidence
 - `norm_pos_x/y`: Normalized (0-1) coordinates on the screen
@@ -72,13 +81,13 @@ See the Pupil Labs documentation for more information about the
 [confidence](https://docs.pupil-labs.com/core/terminology/#confidence) metric and the
 [coordinate systems](https://docs.pupil-labs.com/core/terminology/#coordinate-system).
 
-## LSL Clock Synchronization
+### LSL Clock Synchronization
 
 The `Pupil LSL Relay` plugin adjusts Capture's timebase to synchronize Capture's own clock with the `pylsl.local_clock()`. This allows the recording of native Capture timestamps and removes the necessity of manually synchronize timestamps after the effect.
 
 **Warning**: The time synchronization will potentially break if other time alternating actors (e.g. the `Time Sync` plugin, `hmd-eyes`, or `T` Pupil Remote command) are active. Note that hmd-eyes v1.4 and later no longer adjusts Pupil Capture's clock and is therefore compatible with the LSL Relay Plugin.
 
-### Synchronizing Other Pupil Core Data Post-hoc
+#### Synchronizing Other Pupil Core Data Post-hoc
 
 The [LSL LabRecorder](https://github.com/labstreaminglayer/App-LabRecorder) records LSL data streams to XDF (extensible data format) files. These include the [native stream time (as measured by the `pylsl.local_clock()`) as well as the necessary clock offset to the synchronized time domain between the recorded streams](https://github.com/sccn/xdf/wiki/Specifications#general-comments). Most XDF importers will apply the clock offset when loading the recorded data, yielding time-synchronized samples.
 

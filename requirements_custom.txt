@@ -1,1 +1,0 @@
--e git://github.com/pupil-labs/pyndsi/@master#egg=ndsi
