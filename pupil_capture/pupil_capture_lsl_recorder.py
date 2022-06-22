@@ -48,7 +48,12 @@ class Pupil_LSL_Recorder(Plugin):
                 "Select and record LSL streams in Pupil Capture time."
             )
         )
-        self.menu.append(ui.Info_Text("FURTHER DESCRIPTION"))
+        self.menu.append(
+            ui.Info_Text(
+                "Records LSL streams to corresponding CSV files. File name format: "
+                "`lsl_<name>_<hostname>_<source_id>.csv`"
+            )
+        )
         self._streams_menu = ui.Growing_Menu("Streams to record")
         self.menu.append(self._streams_menu)
 
@@ -74,20 +79,26 @@ class Pupil_LSL_Recorder(Plugin):
 
     def start_recording(self, directory):
         if self._is_recording:
+            logger.debug("start_recording() called although recording was running")
             return
+        logger.debug("starting recording")
         self._set_recording_state(True)
         self._stream_recorders = [
             StreamRecorder.setup(stream, directory, self.g_pool.get_timestamp)
             for stream in self.streams_to_record()
         ]
+        logger.debug(f"started recorders: {self._stream_recorders}")
 
     def stop_recording(self):
         if not self._is_recording:
+            logger.debug("stop_recording() called although recording was not running")
             return
+        logger.debug(f"stopping recorders: {self._stream_recorders}")
         for recorder in self._stream_recorders:
             recorder.close()
         del self._stream_recorders[:]
         self._set_recording_state(False)
+        logger.debug("recording stopped")
 
     def streams_to_record(self):
         if not self._is_recording:
@@ -111,6 +122,8 @@ class Pupil_LSL_Recorder(Plugin):
         self._streams_should_record.update({entry: True for entry in new_entries})
 
         if stream_ids_new or stream_ids_removed:
+            logger.debug(f"stream_ids_new={stream_ids_new}")
+            logger.debug(f"stream_ids_removed={stream_ids_removed}")
             stream_labels = [_stream_label(stream) for stream in self._streams.values()]
             del self._streams_menu[:]
             for stream_source_id, label in zip(self._streams, stream_labels):
@@ -144,6 +157,7 @@ class StreamRecorder(T.NamedTuple):
         inlet.open_stream(timeout=timeout)
         file_name = f"lsl_{stream.name()}_{stream.hostname()}_{stream.source_id()}.csv"
         file_path = os.path.join(rec_dir, file_name)
+        logger.debug(f"opening file at {file_path}")
         file_handle = open(file_path, "w")
         csv_writer = csv.writer(file_handle)
         recorder = StreamRecorder(
@@ -155,6 +169,7 @@ class StreamRecorder(T.NamedTuple):
         )
         recorder._record_header()
         recorder.record_available_data()
+        logger.debug(f"wrote header + available data to {file_path}")
         return recorder
 
     def record_available_data(self):
@@ -170,6 +185,7 @@ class StreamRecorder(T.NamedTuple):
         self.record_available_data()
         self.file_handle.close()
         self.inlet.close_stream()
+        logger.debug(f"{self} closed")
 
     def _record_header(self):
         self.csv_writer.writerow(self._csv_header())
