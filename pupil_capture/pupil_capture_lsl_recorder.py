@@ -2,6 +2,7 @@ import csv
 import itertools
 import logging
 import os
+import traceback
 import typing as T
 
 import pylsl as lsl
@@ -81,12 +82,18 @@ class Pupil_LSL_Recorder(Plugin):
         if self._is_recording:
             logger.debug("start_recording() called although recording was running")
             return
-        logger.debug("starting recording")
+        logger.debug("attempting to start recording")
+        try:
+            self._stream_recorders = [
+                StreamRecorder.setup(stream, directory, self.g_pool.get_timestamp)
+                for stream in self.streams_to_record()
+            ]
+        except lsl.TimeoutError:
+            logging.error("Unable to connect to all LSL streams. Aborting.")
+            logging.debug(traceback.format_exc())
+            self.notify_all({"subject": "recording.should_stop"})
+            return
         self._set_recording_state(True)
-        self._stream_recorders = [
-            StreamRecorder.setup(stream, directory, self.g_pool.get_timestamp)
-            for stream in self.streams_to_record()
-        ]
         logger.debug(f"started recorders: {self._stream_recorders}")
 
     def stop_recording(self):
