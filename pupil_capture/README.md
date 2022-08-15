@@ -44,9 +44,9 @@ The published LSL data is simply a flattened version (see `extract_*()` function
 `pupil_capture_lsl_relay.py`) of the original Pupil gaze data stream. The stream's
 channels will be filled with best effort, i.e. if there is a monocular gaze datum the
 values for the opposite eye will be set to `NaN`. The actual pairing of pupil data to
-binocular gaze data happens in [Capture](https://github.com/pupil-labs/pupil/blob/master/pupil_src/shared_modules/calibration_routines/gaze_mappers.py#L95-L140)
+binocular gaze data happens in [Capture](https://github.com/pupil-labs/pupil/blob/master/pupil_src/shared_modules/gaze_mapping/matching.py#L58-L102)
 and is not a LSL specific behaviour. Therefore, it is possible to apply the same
-[flattening code](https://github.com/papr/App-PupilLabs/blob/master/pupil_lsl_relay.py#L226-L287)
+[flattening code](https://github.com/labstreaminglayer/App-PupilLabs/blob/master/pupil_capture/pupil_capture_lsl_relay/channel.py#L168-L259)
 to offline calibrated gaze data and reproduce the stream published by the LSL outlet.
 
 #### Scene Camera Fixations
