@@ -67,13 +67,28 @@ Exposes fixations by Pupil Capture's [fixation detector](https://docs.pupil-labs
 - `dispersion` - fixation dispersion, in degree
 - `duration` - fixation duration, in milliseconds
 
+#### Pupillometry-only
+
+**Channel name:** `pupil_capture_pupillometry_only`
+**Channel format:** [Gaze Meta Data](https://github.com/sccn/xdf/wiki/Gaze-Meta-Data)
+
+Exposes fixations by Pupil Capture's [fixation detector](https://docs.pupil-labs.com/core/terminology/#fixations).
+
+> Fixations are detected based on a dispersion threshold in terms of degrees of visual
+> angle with a minimum duration. Fixations are published as soon as they comply with the
+> constraints (dispersion and duration). This might result in a series of overlapping
+> fixations.
+
+- `fixation id` - incrementing counter, duplicated values possible
+- `confidence` - mean confidence value of the gaze data used for this fixation
+- `norm_pos_x/y` - mean location of the gaze data used for this fixation
+- `dispersion` - fixation dispersion, in degree
+- `duration` - fixation duration, in milliseconds
+
 ### Data Format
 
 - `confidence`: Normalized (0-1) confidence
-- `norm_pos_x/y`: Normalized (0-1) coordinates on the screen
-- `gaze_point_3d_x/y/z`: World coordinates in mm
-- `eye_center0_3d_x/y/z` (right/left, x/y/z): Position of eye center in world coordinates in mm.
-- `gaze_normal0/1_x/y/z` (right/left, x/y/z): Per-eye gaze direction
+- `norm_pos_x/y`: Normalized (0-1) coordinates within the eye cameras
 - `diameter0/1_2d` (right/left): Pupil diameter in pixels
 - `diameter0/1_3d` (right/left): Pupil diameter in mm
 

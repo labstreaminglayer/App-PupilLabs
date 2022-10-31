@@ -99,6 +99,21 @@ def gaze_normal_channels():
     ]
 
 
+def circle_3d_normal_channels():
+    return [
+        Channel(
+            query=make_extract_gaze_normal_3d(eye, i),
+            label="circle_3d_normal_{}".format("xyz"[i]),
+            eye="both",
+            metatype="Position" + "XYZ"[i],
+            unit="mm",
+            coordinate_system="eye",
+        )
+        for eye in range(2)
+        for i in range(3)
+    ]
+
+
 def diameter_2d_channels():
     return [
         Channel(
@@ -216,25 +231,61 @@ def make_extract_gaze_normal_3d(eye, dim):
 
 
 def make_extract_diameter_2d(eye):
-    def extract_diameter_2d(gaze):
-        base_data = gaze["base_data"]
-        for pupil in base_data:
-            if pupil["id"] == eye:
-                return pupil["diameter"]
+    def extract_diameter_2d(datum):
+        if "gaze" in datum["topic"]:
+            base_data = datum["base_data"]
+            for pupil in base_data:
+                if pupil["id"] == eye:
+                    return pupil["diameter"]
+            else:
+                return np.nan
+        elif "pupil" in datum["topic"]:
+            if datum["id"] == eye:
+                return datum["diameter"]
+            else:
+                return np.nan
         else:
-            return np.nan
+            raise ValueError(f"Unexpected datum: {datum}")
 
     return extract_diameter_2d
 
 
 def make_extract_diameter_3d(eye):
-    def extract_diameter_3d(gaze):
-        base_data = gaze["base_data"]
-        for pupil in base_data:
-            if pupil["id"] == eye and "diameter_3d" in pupil:
-                return pupil["diameter_3d"]
+    def extract_diameter_3d(datum):
+        if "gaze" in datum["topic"]:
+            base_data = datum["base_data"]
+            for pupil in base_data:
+                if pupil["id"] == eye and "diameter_3d" in pupil:
+                    return pupil["diameter_3d"]
+            else:
+                return np.nan
+        elif "pupil" in datum["topic"]:
+            if datum["id"] == eye and "diameter_3d" in datum:
+                return datum["diameter_3d"]
+            else:
+                return np.nan
         else:
-            return np.nan
+            raise ValueError(f"Unexpected datum: {datum}")
+
+    return extract_diameter_3d
+
+
+def make_extract_diameter_3d(eye):
+    def extract_diameter_3d(datum):
+        if "gaze" in datum["topic"]:
+            base_data = datum["base_data"]
+            for pupil in base_data:
+                if pupil["id"] == eye and "diameter_3d" in pupil:
+                    return pupil["diameter_3d"]
+            else:
+                return np.nan
+        elif "pupil" in datum["topic"]:
+            if datum["id"] == eye and "diameter_3d" in datum:
+                return datum["diameter_3d"]
+            else:
+                return np.nan
+        else:
+            raise ValueError(f"Unexpected datum: {datum}")
 
     return extract_diameter_3d
 
