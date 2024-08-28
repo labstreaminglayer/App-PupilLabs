@@ -4,12 +4,11 @@
 
 This repository contains various integrations of the [lab streaming layer](https://github.com/sccn/labstreaminglayer) framework with Pupil Labs products.
 
-## Pupil Invisible/Neon LSL Relay
+## Neon and Pupil Invisible
 
-To receive and save Pupil Invisible and/or Neon data in realtime via LSL, checkout the dedicated
-Pupil Labs LSL Relay application: https://pupil-labs-lsl-relay.readthedocs.io/en/stable/
-
-The legacy Pupil Invisible LSL Relay can be found [here](https://github.com/labstreaminglayer/App-PupilLabs/tree/legacy-pi-lsl-relay/pupil_invisible_lsl_relay).
+* [The Neon Companion app has built-in support for LSL](https://docs.pupil-labs.com/neon/data-collection/lab-streaming-layer/). No additional software is required.
+* To receive and save Pupil Invisible data in realtime via LSL, checkout the dedicated [Pupil Labs LSL Relay application](https://pupil-labs-lsl-relay.readthedocs.io/en/stable/).
+* The legacy Pupil Invisible LSL Relay can be found [here](https://github.com/labstreaminglayer/App-PupilLabs/tree/legacy-pi-lsl-relay/pupil_invisible_lsl_relay).
 
 ## Pupil Capture Plugins
 
