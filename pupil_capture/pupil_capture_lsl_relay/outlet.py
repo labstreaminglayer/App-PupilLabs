@@ -7,6 +7,7 @@
  License details are in the file license.txt, distributed as part of this software.
 ----------------------------------------------------------------------------------~(*)
 """
+
 import abc
 import logging
 from typing import Optional, Sequence
