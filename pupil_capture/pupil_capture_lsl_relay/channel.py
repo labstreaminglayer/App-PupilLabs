@@ -7,6 +7,7 @@
  License details are in the file license.txt, distributed as part of this software.
 ----------------------------------------------------------------------------------~(*)
 """
+
 import numpy as np
 from pylsl import XMLElement
 
@@ -189,8 +190,8 @@ def make_extract_normpos(dim):
 
 
 def make_extract_gaze_point_3d(dim):
-    return (
-        lambda gaze: gaze["gaze_point_3d"][dim] if "gaze_point_3d" in gaze else np.nan
+    return lambda gaze: (
+        gaze["gaze_point_3d"][dim] if "gaze_point_3d" in gaze else np.nan
     )
 
 
